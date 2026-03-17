@@ -1,0 +1,280 @@
+:root {
+    --bg-main: #1a0f0a;
+    --surface-card: #2a1a10;
+    --border-subtle: #3a2418;
+    --accent-primary: #e8621a;
+    --text-primary: #ffffff;
+    --text-secondary: #8a7a72;
+    --input-bg: #1f1208;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+/* Tipografía de la marca */
+.brand-eco {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.brand-memory {
+    color: var(--accent-primary);
+    font-weight: 700;
+}
+
+/* Logo */
+.eco-logo {
+    background-color: var(--accent-primary);
+    border-radius: 18px;
+    width: 56px;
+    height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 28px;
+}
+
+.eco-logo-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+/* Contenedores y Cards */
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.card-dark {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+}
+
+/* Formularios */
+.custom-input-group .input-group-text {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-subtle);
+    border-right: none;
+    color: var(--text-secondary);
+}
+
+.custom-input-group .form-control {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-subtle);
+    border-left: none;
+    color: var(--text-primary);
+}
+
+.custom-input-group .form-control:focus {
+    background-color: var(--input-bg);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    box-shadow: none;
+}
+
+.custom-input-group:focus-within .input-group-text,
+.custom-input-group:focus-within .form-control {
+    border-color: var(--accent-primary);
+}
+
+.form-label {
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.text-muted-custom {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.link-accent {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link-accent:hover {
+    color: #d15615;
+}
+
+/* Botones */
+.btn-primary-custom {
+    background-color: var(--accent-primary);
+    color: white;
+    border: none;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 10px 20px;
+}
+
+.btn-primary-custom:hover {
+    background-color: #d15615;
+    color: white;
+}
+
+/* Layout Galería */
+.navbar-custom {
+    background-color: var(--bg-main);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1rem 2rem;
+}
+
+.sidebar-wrapper {
+    width: 280px;
+    background-color: var(--bg-main);
+    border-right: 1px solid var(--border-subtle);
+    min-height: calc(100vh - 70px);
+}
+
+/* Lifecycle Monitor */
+.stat-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.stat-icon {
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Badges y Colores de Erosión */
+.bg-light-decay {
+    background-color: #28a745;
+    color: white;
+}
+
+.text-light-decay {
+    color: #28a745;
+}
+
+.bg-minor-decay {
+    background-color: #ffc107;
+    color: black;
+}
+
+.text-minor-decay {
+    color: #ffc107;
+}
+
+.bg-major-decay {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.text-major-decay {
+    color: #fd7e14;
+}
+
+.bg-critical-decay {
+    background-color: #dc3545;
+    color: white;
+}
+
+.text-critical-decay {
+    color: #dc3545;
+}
+
+/* Tarjetas de Galería */
+.gallery-card {
+    background-color: var(--surface-card);
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.gallery-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    background-color: #111;
+}
+
+.badge-decay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.70rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+/* Botones flotantes */
+.fab-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-end;
+    z-index: 1000;
+}
+
+.btn-fab-secondary {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    color: var(--accent-primary);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.btn-fab-secondary:hover {
+    background-color: #3a2418;
+    color: var(--accent-primary);
+}
+
+.btn-fab-primary {
+    background-color: var(--accent-primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(232, 98, 26, 0.3);
+}
+
+/* Modales */
+.modal-content.card-dark {
+    background-color: var(--surface-card);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-subtle);
+}

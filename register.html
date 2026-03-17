@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMemory - Register</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="text-center mb-4">
+            <div class="eco-logo mb-2"><i class="bi bi-leaf"></i></div>
+            <h2 class="mb-1"><span class="brand-eco">Eco</span><span class="brand-memory">Memory</span></h2>
+            <p class="text-muted-custom">Join the sustainable digital archive</p>
+        </div>
+
+        <div class="card card-dark w-100 p-4" style="max-width: 480px;">
+            <form id="registerForm">
+                <div class="row mb-3">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <label class="form-label">First Name</label>
+                        <input type="text"
+                            class="form-control custom-input-group bg-transparent text-white border-secondary"
+                            id="fName" placeholder="John" required
+                            style="background-color: var(--input-bg) !important;">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Last Name</label>
+                        <input type="text"
+                            class="form-control custom-input-group bg-transparent text-white border-secondary"
+                            id="lName" placeholder="Doe" required style="background-color: var(--input-bg) !important;">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="emailReg" placeholder="name@example.com" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="passReg" placeholder="••••••••" required>
+                        <span class="input-group-text bg-transparent border-start-0" id="togglePass"
+                            style="cursor: pointer;">
+                            <i class="bi bi-eye"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="btn btn-primary-custom w-100 d-flex justify-content-center align-items-center gap-2">
+                    Create Account <i class="bi bi-arrow-right"></i>
+                </button>
+                <div id="authAlerts"></div>
+            </form>
+
+            <div class="text-center mt-4">
+                <span class="text-muted-custom">Already have an account?</span>
+                <a href="index.html" class="link-accent">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+
+</html>
