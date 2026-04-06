@@ -68,7 +68,8 @@ JS recibe respuesta → actualiza localStorage (caché) → re-renderiza UI
 - [PyWebView 6.x](https://pywebview.flowrl.com/guide/installation.html)
 
 ```bash
-pip install pywebview
+pip install pywebview # Windows
+pip install pywebview[qt] # Linux or macOS
 ```
 
 ## Ejecución
