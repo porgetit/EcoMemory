@@ -64,8 +64,8 @@ JS recibe respuesta → actualiza localStorage (caché) → re-renderiza UI
 
 ## Requisitos
 
-- Python 3.10+
-- PyWebView 6.x
+- [Python 3.10+](https://www.python.org/)
+- [PyWebView 6.x](https://pywebview.flowrl.com/guide/installation.html)
 
 ```bash
 pip install pywebview
@@ -79,10 +79,6 @@ python app.py
 
 > Se abre una ventana nativa del SO con la aplicación. No se requiere ningún servidor ni navegador externo.
 
-**Cuenta de prueba incluida en el seed:**
-- Email: `alex@example.com`
-- Contraseña: `password123`
-
 ## Créditos
 
-Desarrollado por **Kevin Esguerra Cardona**, con soporte de Gemini 2.5 Flash usando Antigravity.
+Desarrollado por [**Kevin Esguerra Cardona**](mailto:kevin.esguerra@utp.edu.co) y **Juan Andrés Velásquez Jiménez** usando Antigravity.
