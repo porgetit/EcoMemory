@@ -64,3 +64,28 @@ export const apiPickAndUpload = async (usuarioId) => {
     await waitForPyWebView();
     return await window.pywebview.api.pick_and_upload(usuarioId);
 };
+
+// Soft-delete: marca la foto como en_papelera
+// Retorna: { success: bool, error?: str }
+export const apiDeletePhoto = async (fotoId, usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.delete_photo(fotoId, usuarioId);
+};
+
+// Configuración dinámica (polling interval, etc.)
+// Retorna: { pollingIntervalMs: number }
+export const apiGetConfig = async () => {
+    await waitForPyWebView();
+    return await window.pywebview.api.get_config();
+};
+
+// Ciclo de vida del daemon de erosión
+export const apiStartSession = async (usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.start_session(usuarioId);
+};
+
+export const apiEndSession = async () => {
+    await waitForPyWebView();
+    return await window.pywebview.api.end_session();
+};

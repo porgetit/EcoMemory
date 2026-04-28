@@ -13,3 +13,8 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Datos de usuario (runtime)
+assets/images/*
+!assets/images/.gitkeep
+data/ecomemory.db

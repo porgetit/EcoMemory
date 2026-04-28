@@ -1,5 +1,5 @@
 // AuthService - Módulo de Autenticación (Registro / Login)
-import { initStorage, buscarPorCorreo, apiRegister } from './storage.js';
+import { initStorage, buscarPorCorreo, apiRegister, apiEndSession } from './storage.js';
 
 const SESSION_KEY = 'ecomemory_session';
 
@@ -23,7 +23,11 @@ export const registrar = async (nombre, apellido, correo, contrasena) => {
 };
 
 export const getSession = () => JSON.parse(sessionStorage.getItem(SESSION_KEY));
-export const logout = () => { sessionStorage.removeItem(SESSION_KEY); window.location.href = 'index.html'; };
+export const logout = async () => {
+    await apiEndSession();
+    sessionStorage.removeItem(SESSION_KEY);
+    window.location.href = 'index.html';
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
     await initStorage();
