@@ -25,10 +25,8 @@ El proyecto explora esta idea como comentario sobre conservación medioambiental
 - Navegación multi-pantalla (login → registro → galería) con guardas de sesión.
 **Limitaciones conocidas del prototipo:**
 
-- La persistencia se basa en un archivo JSON plano (`data/db.json`), sin transacciones ni control de concurrencia.
 - El nivel de deterioro se genera de forma aleatoria en lugar de calcularse a partir de la antigüedad real o frecuencia de acceso.
 - Las contraseñas se almacenan en texto plano.
-- No hay tests automatizados.
 
 ---
 
@@ -37,7 +35,7 @@ El proyecto explora esta idea como comentario sobre conservación medioambiental
 ```bash
 EcoMemory/
 ├── app.py               # Punto de entrada: crea ventana PyWebView e inyecta la API
-├── api.py               # EcoMemoryAPI: bridge Python ↔ JavaScript
+├── api.py               # EcoMemoryAPI: bridge Python ↔ JavaScript (SQLAlchemy)
 ├── index.html           # Pantalla de login
 ├── register.html        # Pantalla de registro
 ├── gallery.html         # Galería principal + panel de métricas
@@ -49,8 +47,16 @@ EcoMemory/
 │   ├── gallery.js       # Orquestador: renderizado de galería y subida de fotos
 │   ├── erosion.js       # Motor de cálculo y clasificación de deterioro
 │   └── dashboard.js     # Cómputo y renderizado de métricas del panel lateral
+├── database/
+│   ├── __init__.py
+│   ├── models.py        # Modelos ORM: Usuario, Fotografia, RegistroEliminacion
+│   ├── session.py       # Engine SQLite, fábrica de sesión, init_db()
+│   └── migrate.py       # Script de migración one-shot: JSON → SQLite
+├── tests/
+│   └── test_api.py      # Suite de tests con pytest (5 tests)
 ├── data/
-│   └── db.json          # Base de datos JSON (usuarios y fotografías)
+│   ├── ecomemory.db     # Base de datos SQLite
+│   └── db.json.bak      # Backup del JSON original (pre-migración)
 └── assets/
     ├── logo.svg
     └── images/          # Almacenamiento de imágenes subidas por el usuario
@@ -65,9 +71,9 @@ JavaScript
     │  await window.pywebview.api.<método>(args)
     ▼
 EcoMemoryAPI (api.py)
-    ├── get_db()           → lee db.json → retorna objeto completo a JS
-    ├── register_user()    → valida unicidad de correo → escribe en db.json
-    └── pick_and_upload()  → diálogo OS nativo → copia archivo → escribe en db.json
+    ├── get_db()           → consulta SQLite vía SQLAlchemy → serializa a camelCase → retorna a JS
+    ├── register_user()    → valida unicidad de correo → INSERT en SQLite → commit
+    └── pick_and_upload()  → diálogo OS nativo → copia archivo → INSERT en SQLite
                              → retorna lista de fotos nuevas a JS
 ```
 
@@ -96,10 +102,12 @@ EcoMemoryAPI (api.py)
 |---|---|
 | Shell de escritorio | [PyWebView 6.x](https://pywebview.flowrl.com/) |
 | Backend / I/O | Python 3.10+ |
+| ORM | [SQLAlchemy 2.0+](https://www.sqlalchemy.org/) |
+| Persistencia | SQLite (`data/ecomemory.db`) |
 | Frontend | HTML5, Vanilla JS (ES Modules), CSS con custom properties |
 | UI framework | [Bootstrap 5.3](https://getbootstrap.com/) + Bootstrap Icons 1.11 |
 | Tipografía | Inter (Google Fonts) |
-| Persistencia | JSON plano (`data/db.json`) |
+| Testing | [pytest](https://docs.pytest.org/) |
 | Almacenamiento de imágenes | Sistema de archivos local (`assets/images/`) |
 
 ---
@@ -124,13 +132,19 @@ pip install pywebview[qt]
 
 ---
 
-## Ejecución dentro del entorno virtual con las dependencias instaladas
+## Ejecución
 
 ```bash
 python app.py
 ```
 
 Se abre una ventana nativa del SO. No se requiere servidor externo ni navegador.
+
+### Tests
+
+```bash
+pytest tests/ -v
+```
 
 ---
 
