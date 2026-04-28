@@ -24,3 +24,9 @@ def init_db(engine):
 def get_session_factory(engine):
     """Retorna una fábrica de sesión vinculada al engine."""
     return sessionmaker(bind=engine)
+
+"""
+Object-Relational Mapping (ORM) is a programming technique that connects object-oriented programming (OOP) to relational databases,
+allowing developers to manipulate database data using code objects instead of writing raw SQL queries. It acts as an abstraction layer,
+increasing developer productivity and improving code maintainability. 
+"""
