@@ -86,13 +86,11 @@ EcoMemoryAPI (api.py)
 `erosion.js` define dos funciones puras:
 
 - `calcularNivelDeterioro()` → `float [0, 1]` (actualmente aleatorio).
-- `determinarEstado(nivel)` → uno de cuatro estados según umbrales fijos.
-| Estado | Rango |
-|---|---|
-| `DETERIORO_LEVE` | `< 0.25` |
-| `DETERIORO_MENOR` | `0.25 – 0.50` |
-| `DETERIORO_MAYOR` | `0.50 – 0.75` |
-| `DETERIORO_CRÍTICO` | `≥ 0.75` |
+- `determinarEstado(nivel)` → uno de cuatro estados según umbrales fijos:
+  - `DETERIORO_LEVE` — `< 0.25`
+  - `DETERIORO_MENOR` — `0.25 – 0.50`
+  - `DETERIORO_MAYOR` — `0.50 – 0.75`
+  - `DETERIORO_CRÍTICO` — `≥ 0.75`
 
 ---
 
