@@ -5,8 +5,11 @@ Ejecutar con: python app.py
 import os
 import webview
 from api import EcoMemoryAPI
+from pathlib import Path
 
 if __name__ == '__main__':
+    Path("./assets/images").mkdir(exist_ok=True)
+
     base_dir = os.path.dirname(os.path.abspath(__file__))
     api = EcoMemoryAPI(base_dir)
 
