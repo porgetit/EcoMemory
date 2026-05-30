@@ -155,6 +155,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // ── Botón papelera → navegar a trash.html ──
+    document.getElementById('btnTrash').addEventListener('click', () => {
+        window.location.href = 'trash.html';
+    });
+
     // Arrancar el daemon de erosión para este usuario
     await apiStartSession(session.usuarioId);
 

@@ -71,6 +71,7 @@ class RegistroEliminacion(Base):
     )
     fecha_ingreso_papelera = Column(DateTime, nullable=False)
     fecha_eliminacion_definitiva = Column(DateTime, nullable=True)
+    auto = Column(Boolean, nullable=False, default=False)
 
     # Relaciones
     fotografia = relationship('Fotografia', back_populates='registros_eliminacion')

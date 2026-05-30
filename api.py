@@ -127,10 +127,47 @@ class EcoMemoryAPI:
                                     fotografia_id=foto.id,
                                     usuario_id=usuario_id,
                                     fecha_ingreso_papelera=ahora,
+                                    auto=True, 
                                 )
                                 session.add(registro)
                                 self._log(
                                     f'  ⚠ AUTO-ELIMINADA: "{foto.nombre}" → papelera'
+                                )
+
+                        session.commit()
+
+                        fotos_papelera = session.query(Fotografia).filter(
+                            Fotografia.usuario_id == usuario_id,
+                            Fotografia.en_papelera == True,
+                        ).all()
+
+                        for foto in fotos_papelera:
+                            registro = session.query(RegistroEliminacion).filter(
+                                RegistroEliminacion.fotografia_id == foto.id
+                            ).first()
+
+                            if not registro or not registro.fecha_ingreso_papelera:
+                                continue
+
+                            fecha_ingreso_aware = registro.fecha_ingreso_papelera.replace(
+                                tzinfo=timezone.utc
+                            )
+                            dias_en_papelera = (ahora - fecha_ingreso_aware).days
+
+                            if dias_en_papelera >= 30:
+                                nombre = foto.nombre
+                                ruta   = foto.ruta_original
+
+                                try:
+                                    if os.path.exists(ruta):
+                                        os.remove(ruta)
+                                except Exception as e:
+                                    self._log(f'✗ Error al eliminar archivo: {e}')
+
+                                session.delete(foto)
+                                self._log(
+                                    f'  🗑 AUTO-PURGADA: "{nombre}" '
+                                    f'({dias_en_papelera} días en papelera)'
                                 )
 
                         session.commit()
@@ -251,12 +288,136 @@ class EcoMemoryAPI:
                 fotografia_id=foto.id,
                 usuario_id=usuario_id,
                 fecha_ingreso_papelera=ahora,
+                auto=False,
             )
             session.add(registro)
             session.commit()
 
             return {'success': True}
 
+    def get_trash(self, usuario_id: int) -> dict:
+        """
+        Retorna todas las fotos en papelera del usuario,
+        con días transcurridos y días restantes antes de la
+        eliminación definitiva automática (30 días).
+        Retorna: { success: bool, fotos: list }
+        """
+        with self.SessionLocal() as session:
+            fotos = session.query(Fotografia).filter(
+                Fotografia.usuario_id == usuario_id,
+                Fotografia.en_papelera == True,
+            ).all()
+    
+            ahora = datetime.now(timezone.utc)
+            resultado = []
+    
+            for foto in fotos:
+                registro = session.query(RegistroEliminacion).filter(
+                    RegistroEliminacion.fotografia_id == foto.id
+                ).order_by(RegistroEliminacion.fecha_ingreso_papelera.desc()).first()
+    
+                fecha_ingreso = None
+                dias_transcurridos = 0
+                dias_restantes = 30
+    
+                if registro and registro.fecha_ingreso_papelera:
+                    fecha_ingreso_aware = registro.fecha_ingreso_papelera.replace(
+                        tzinfo=timezone.utc
+                    )
+                    dias_transcurridos = (ahora - fecha_ingreso_aware).days
+                    dias_restantes = max(0, 30 - dias_transcurridos)
+                    fecha_ingreso = registro.fecha_ingreso_papelera.strftime(
+                        '%Y-%m-%d %H:%M:%S'
+                    )
+    
+                serializada = self._serializar_fotografia(foto)
+                serializada['fechaIngresoPapelera'] = fecha_ingreso
+                serializada['diasTranscurridos']    = dias_transcurridos
+                serializada['diasRestantes']         = dias_restantes
+    
+                resultado.append(serializada)
+    
+            return {'success': True, 'fotos': resultado}
+
+    def restore_photo(self, foto_id: int, usuario_id: int) -> dict:
+        """
+        Restaura una foto desde la papelera a la galería activa:
+        - Marca en_papelera = False
+        - Resetea nivel_deterioro = 0.0 y estado_erosion = 'DETERIORO_LEVE'
+        - Actualiza fecha_ultimo_acceso = ahora
+        - Elimina el RegistroEliminacion asociado
+        Retorna: { success: bool, error?: str }
+        """
+        with self.SessionLocal() as session:
+            foto = session.query(Fotografia).filter(
+                Fotografia.id == foto_id,
+                Fotografia.usuario_id == usuario_id,
+                Fotografia.en_papelera == True,
+            ).first()
+    
+            if not foto:
+                return {'success': False, 'error': 'NOT_FOUND'}
+    
+            # Restaurar estado
+            foto.en_papelera = False
+            foto.nivel_deterioro = 0.0
+            foto.estado_erosion = 'DETERIORO_LEVE'
+            foto.fecha_ultimo_acceso = self._ahora_dt()
+    
+            # Eliminar el registro de papelera asociado
+            registro = session.query(RegistroEliminacion).filter(
+                RegistroEliminacion.fotografia_id == foto_id
+            ).first()
+    
+            if registro:
+                session.delete(registro)
+    
+            session.commit()
+    
+            self._log(f'✓ RESTAURADA: "{foto.nombre}" → galería activa')
+    
+            return {'success': True}
+
+    def permanent_delete(self, foto_id: int, usuario_id: int) -> dict:
+        """
+        Elimina definitivamente una foto desde la papelera:
+        - Elimina el archivo físico del sistema de archivos
+        - Borra el registro de Fotografia y su RegistroEliminacion de la DB
+        Retorna: { success: bool, error?: str }
+        """
+        with self.SessionLocal() as session:
+            foto = session.query(Fotografia).filter(
+                Fotografia.id == foto_id,
+                Fotografia.usuario_id == usuario_id,
+                Fotografia.en_papelera == True,
+            ).first()
+    
+            if not foto:
+                return {'success': False, 'error': 'NOT_FOUND'}
+    
+            nombre  = foto.nombre
+            ruta    = foto.ruta_original
+            tamano  = foto.tamano_bytes
+    
+            # Eliminar archivo físico
+            try:
+                if os.path.exists(ruta):
+                    os.remove(ruta)
+                    self._log(f'✓ ARCHIVO ELIMINADO: {ruta}')
+                else:
+                    self._log(f'⚠ Archivo no encontrado en disco: {ruta}')
+            except Exception as e:
+                self._log(f'✗ Error al eliminar archivo: {e}')
+                return {'success': False, 'error': 'FILE_DELETE_ERROR'}
+    
+            # Eliminar registro de la DB (cascade elimina RegistroEliminacion)
+            session.delete(foto)
+            session.commit()
+    
+            self._log(f'✓ ELIMINADA DEFINITIVAMENTE: "{nombre}" ({tamano} bytes)')
+    
+            return {'success': True, 'nombre': nombre, 'tamanoBytes': tamano}
+    
     def get_photo_detail(self, foto_id: int, usuario_id: int) -> dict:
         """
         Retorna los datos de una fotografía específica del usuario.

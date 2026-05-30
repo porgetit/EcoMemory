@@ -103,3 +103,24 @@ export const apiViewPhoto = async (fotoId, usuarioId) => {
     await waitForPyWebView();
     return await window.pywebview.api.view_photo(fotoId, usuarioId);
 };
+
+// Retorna todas las fotos en papelera del usuario con días restantes
+// Retorna: { success: bool, fotos: list }
+export const apiGetTrash = async (usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.get_trash(usuarioId);
+};
+
+// Restaura una foto desde la papelera a la galería activa
+// Retorna: { success: bool, error?: str }
+export const apiRestorePhoto = async (fotoId, usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.restore_photo(fotoId, usuarioId);
+};
+
+// Elimina definitivamente una foto desde la papelera (archivo físico + DB)
+// Retorna: { success: bool, error?: str }
+export const apiPermanentDelete = async (fotoId, usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.permanent_delete(fotoId, usuarioId);
+};
