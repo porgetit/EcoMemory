@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMemory - Photo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg-main);
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ── Fondo: canvas ocupa toda la pantalla ── */
+        #photoBackground {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.55);
+        }
+
+        /* ── Overlay oscuro sobre el fondo ── */
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(26, 15, 10, 0.25) 0%,
+                rgba(26, 15, 10, 0.15) 40%,
+                rgba(26, 15, 10, 0.65) 100%
+            );
+            z-index: 1;
+        }
+
+        /* ── Navbar flotante ── */
+        .photo-navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.75rem;
+            background: linear-gradient(to bottom, rgba(26,15,10,0.7), transparent);
+        }
+
+        .photo-navbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(42, 26, 16, 0.75);
+            border: 1px solid rgba(58, 36, 24, 0.8);
+            color: #fff;
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-back:hover {
+            background: rgba(58, 36, 24, 0.95);
+            transform: translateX(-2px);
+        }
+
+        /* ── Panel inferior ── */
+        .photo-panel {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(600px, calc(100vw - 40px));
+            z-index: 10;
+            animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(28px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .panel-card {
+            background: rgba(26, 15, 10, 0.72);
+            border: 1px solid rgba(58, 36, 24, 0.7);
+            border-radius: 16px;
+            padding: 22px 26px 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Cabecera del panel */
+        .panel-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .panel-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            margin-bottom: 3px;
+        }
+
+        .panel-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .panel-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: right;
+            padding-top: 6px;
+        }
+
+        /* Barra de progreso */
+        .erosion-bar-track {
+            height: 4px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 2px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .erosion-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.6s ease;
+            background: var(--accent-primary);
+        }
+
+        /* Mensaje de restauración */
+        .panel-message {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* Botones de acción */
+        .panel-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 14px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(58, 36, 24, 0.7);
+            background: rgba(42, 26, 16, 0.6);
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s, transform 0.15s, border-color 0.2s;
+        }
+
+        .btn-action i {
+            font-size: 1.25rem;
+        }
+
+        .btn-action:hover {
+            background: rgba(58, 36, 24, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .btn-action.protect i { color: var(--accent-primary); }
+        .btn-action.protect:hover { border-color: var(--accent-primary); }
+
+        .btn-action.trash i   { color: #8a7a72; }
+        .btn-action.trash:hover {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.15);
+        }
+        .btn-action.trash:hover i { color: #dc3545; }
+
+        /* Nombre del archivo (navbar derecha) */
+        .photo-filename {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Estado de carga */
+        #loadingState {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-main);
+            transition: opacity 0.3s;
+        }
+
+        #loadingState.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Estado de carga -->
+    <div id="loadingState">
+        <div class="text-center">
+            <div class="spinner-border text-warning mb-3" style="color: var(--accent-primary) !important;"></div>
+            <div class="text-muted-custom" style="font-size: 0.85rem;">Loading photo...</div>
+        </div>
+    </div>
+
+    <!-- Canvas de fondo (imagen con pixelado previo) -->
+    <canvas id="photoBackground"></canvas>
+
+    <!-- Overlay de oscurecimiento -->
+    <div class="bg-overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="photo-navbar">
+        <button class="btn-back" id="btnBack">
+            <i class="bi bi-arrow-left"></i> Gallery
+        </button>
+        <div class="photo-filename" id="photoFilename">—</div>
+    </nav>
+
+    <!-- Panel inferior -->
+    <div class="photo-panel">
+        <div class="panel-card">
+
+            <div class="panel-header">
+                <div>
+                    <div class="panel-label">Data Integrity</div>
+                    <div class="panel-title" id="erosionTitle">Erosion: —</div>
+                </div>
+                <div class="panel-status" id="panelStatus">—</div>
+            </div>
+
+            <div class="erosion-bar-track">
+                <div class="erosion-bar-fill" id="erosionBarFill" style="width: 0%;"></div>
+            </div>
+
+            <div class="panel-message" id="panelMessage">
+                Loading photo data...
+            </div>
+
+            <div class="panel-actions">
+                <button class="btn-action protect" id="btnProtect">
+                    <i class="bi bi-shield-fill"></i>
+                    Protect
+                </button>
+                <button class="btn-action trash" id="btnTrash">
+                    <i class="bi bi-trash3"></i>
+                    Move to Trash
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/photo.js"></script>
+</body>
+
+</html>

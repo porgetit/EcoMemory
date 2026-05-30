@@ -89,3 +89,17 @@ export const apiEndSession = async () => {
     await waitForPyWebView();
     return await window.pywebview.api.end_session();
 };
+
+// Retorna los datos de una fotografía específica sin modificarla
+// Retorna: { success: bool, foto?: dict, error?: str }
+export const apiGetPhotoDetail = async (fotoId, usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.get_photo_detail(fotoId, usuarioId);
+};
+
+// Registra la visualización individual: resetea deterioro y actualiza fecha_ultimo_acceso
+// Retorna: { success: bool, nivelPrevio?: float, foto?: dict, error?: str }
+export const apiViewPhoto = async (fotoId, usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.view_photo(fotoId, usuarioId);
+};

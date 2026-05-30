@@ -99,6 +99,13 @@ const renderizarGaleria = () => {
                 renderizarGaleria();
             }
         });
+
+        const card = colDiv.querySelector('.gallery-card');
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+            localStorage.setItem('ecomemory_foto_actual', foto.id);
+            window.location.href = 'photo.html';
+        });
     });
 
     renderizarDashboard();

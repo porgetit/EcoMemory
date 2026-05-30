@@ -100,11 +100,11 @@ class EcoMemoryAPI:
                         for foto in fotos:
                             # Fix #1: SQLite devuelve datetimes naive;
                             # forzar UTC para evitar "offset-naive vs aware".
-                            fecha_subida_aware = foto.fecha_subida.replace(
+                            fecha_base_aware = foto.fecha_ultimo_acceso.replace(
                                 tzinfo=timezone.utc
                             )
                             transcurrido = (
-                                ahora - fecha_subida_aware
+                                ahora - fecha_base_aware
                             ).total_seconds()
                             nuevo_nivel = min(
                                 transcurrido / TIEMPO_MAXIMO_VIDA, 1.0
@@ -257,6 +257,54 @@ class EcoMemoryAPI:
 
             return {'success': True}
 
+    def get_photo_detail(self, foto_id: int, usuario_id: int) -> dict:
+        """
+        Retorna los datos de una fotografía específica del usuario.
+        Retorna: { success: bool, foto?: dict, error?: str }
+        """
+        with self.SessionLocal() as session:
+            foto = session.query(Fotografia).filter(
+                Fotografia.id == foto_id,
+                Fotografia.usuario_id == usuario_id,
+            ).first()
+    
+            if not foto:
+                return {'success': False, 'error': 'NOT_FOUND'}
+    
+            return {'success': True, 'foto': self._serializar_fotografia(foto)}
+
+    def view_photo(self, foto_id: int, usuario_id: int) -> dict:
+        """
+        Registra que el usuario visualizó la foto individualmente:
+        - Guarda el nivel de deterioro previo para mostrárselo al usuario
+        - Resetea nivel_deterioro a 0.0 y estado_erosion a 'DETERIORO_LEVE'
+        - Actualiza fecha_ultimo_acceso a ahora
+        Retorna: { success: bool, nivelPrevio?: float, foto?: dict, error?: str }
+        """
+        with self.SessionLocal() as session:
+            foto = session.query(Fotografia).filter(
+                Fotografia.id == foto_id,
+                Fotografia.usuario_id == usuario_id,
+                Fotografia.en_papelera == False,
+            ).first()
+    
+            if not foto:
+                return {'success': False, 'error': 'NOT_FOUND'}
+    
+            nivel_previo = foto.nivel_deterioro
+    
+            foto.nivel_deterioro = 0.0
+            foto.estado_erosion = 'DETERIORO_LEVE'
+            foto.fecha_ultimo_acceso = self._ahora_dt()
+    
+            session.commit()
+    
+            return {
+                'success': True,
+                'nivelPrevio': nivel_previo,
+                'foto': self._serializar_fotografia(foto),
+            }
+    
     def register_user(self, nombre: str, correo: str, contrasena: str) -> dict:
         """
         Registra un nuevo usuario en la base de datos.
