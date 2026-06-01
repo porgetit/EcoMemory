@@ -127,6 +127,7 @@ class EcoMemoryAPI:
                                     fotografia_id=foto.id,
                                     usuario_id=usuario_id,
                                     fecha_ingreso_papelera=ahora,
+                                    tamano_bytes=foto.tamano_bytes,
                                     auto=True, 
                                 )
                                 session.add(registro)
@@ -163,6 +164,13 @@ class EcoMemoryAPI:
                                         os.remove(ruta)
                                 except Exception as e:
                                     self._log(f'✗ Error al eliminar archivo: {e}')
+
+                                registro = session.query(RegistroEliminacion).filter(
+                                    RegistroEliminacion.fotografia_id == foto.id
+                                ).first()
+
+                                if registro:
+                                    registro.fecha_eliminacion_definitiva = ahora
 
                                 session.delete(foto)
                                 self._log(
@@ -267,6 +275,54 @@ class EcoMemoryAPI:
                 ],
             }
 
+    def get_dashboard_stats(self, usuario_id: int) -> dict:
+        """
+        Calcula en tiempo real todas las métricas del dashboard para un usuario.
+        Retorna: { success: bool, stats: dict }
+        """
+        with self.SessionLocal() as session:
+            # Fotos activas por estado de erosión
+            fotos_activas = session.query(Fotografia).filter(
+                Fotografia.usuario_id == usuario_id,
+                Fotografia.en_papelera == False,
+            ).all()
+
+            conteos = {
+                'DETERIORO_LEVE':    0,
+                'DETERIORO_MENOR':   0,
+                'DETERIORO_MAYOR':   0,
+                'DETERIORO_CRITICO': 0,
+            }
+            for foto in fotos_activas:
+                estado = foto.estado_erosion or 'DETERIORO_LEVE'
+                if estado in conteos:
+                    conteos[estado] += 1
+
+            # Total eliminadas y bytes liberados desde RegistroEliminacion
+            from sqlalchemy import func
+
+            total_eliminadas = session.query(RegistroEliminacion).filter(
+                RegistroEliminacion.usuario_id == usuario_id,
+                RegistroEliminacion.auto == True,
+            ).count()
+            
+            bytes_liberados = session.query(
+                func.coalesce(func.sum(RegistroEliminacion.tamano_bytes), 0)
+            ).filter(
+                RegistroEliminacion.usuario_id == usuario_id,
+                RegistroEliminacion.auto == True,
+            ).scalar() or 0
+
+            return {
+                'success': True,
+                'stats': {
+                    'totalEliminadasSistema': total_eliminadas,
+                    'bytesLiberados':         bytes_liberados,
+                    'conteoPorEstado':         conteos,
+                    'totalFotosActivas':      len(fotos_activas),
+                }
+            }
+
     def delete_photo(self, foto_id: int, usuario_id: int) -> dict:
         """
         Soft-delete: marca la foto como en_papelera y crea un RegistroEliminacion.
@@ -288,6 +344,7 @@ class EcoMemoryAPI:
                 fotografia_id=foto.id,
                 usuario_id=usuario_id,
                 fecha_ingreso_papelera=ahora,
+                tamano_bytes=foto.tamano_bytes,
                 auto=False,
             )
             session.add(registro)
@@ -410,7 +467,15 @@ class EcoMemoryAPI:
                 self._log(f'✗ Error al eliminar archivo: {e}')
                 return {'success': False, 'error': 'FILE_DELETE_ERROR'}
     
-            # Eliminar registro de la DB (cascade elimina RegistroEliminacion)
+            registro = session.query(RegistroEliminacion).filter(
+                RegistroEliminacion.fotografia_id == foto_id
+            ).first()
+            
+            if registro:
+                registro.fecha_eliminacion_definitiva = self._ahora_dt()
+                registro.fotografia_id = None
+                session.flush()
+            
             session.delete(foto)
             session.commit()
     

@@ -124,3 +124,10 @@ export const apiPermanentDelete = async (fotoId, usuarioId) => {
     await waitForPyWebView();
     return await window.pywebview.api.permanent_delete(fotoId, usuarioId);
 };
+
+// Retorna estadísticas reales del dashboard desde la DB
+// Retorna: { success: bool, stats: dict }
+export const apiGetDashboardStats = async (usuarioId) => {
+    await waitForPyWebView();
+    return await window.pywebview.api.get_dashboard_stats(usuarioId);
+};

@@ -1,32 +1,41 @@
-// DashboardService - Módulo de Panel de Control
-import { getEstadisticas, getFotografiasActivas } from './storage.js';
+import { apiGetDashboardStats, getFotografiasActivas } from './storage.js';
 import { getSession } from './auth.js';
 
-// Formateo de bytes a GB
-const formatBytesToGB = (bytes) => (bytes / (1024 * 1024 * 1024)).toFixed(1);
+// ──────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ──────────────────────────────────────────────────────────────────────────────
 
-// DashboardService.obtenerEstadisticas()
-export const renderizarDashboard = () => {
+const formatBytes = (bytes) => {
+    if (bytes === 0)           return '0 B';
+    if (bytes < 1024)          return `${bytes} B`;
+    if (bytes < 1024 ** 2)     return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 ** 3)     return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+    return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Render principal
+// ──────────────────────────────────────────────────────────────────────────────
+
+export const renderizarDashboard = async () => {
     const session = getSession();
     if (!session) return;
 
-    // Métricas globales del seed
-    const estadisticas = getEstadisticas(session.usuarioId);
+    const res = await apiGetDashboardStats(session.usuarioId);
+    if (!res || !res.success) return;
 
-    // Cálculos dinámicos desde sesión para las categorías de erosión
-    const fotosActivas = getFotografiasActivas(session.usuarioId);
-    const conteos = {
-        'DETERIORO_LEVE': 0, 'DETERIORO_MENOR': 0, 'DETERIORO_MAYOR': 0, 'DETERIORO_CRITICO': 0
-    };
-    fotosActivas.forEach(f => { conteos[f.estadoErosion]++; });
+    const { stats } = res;
+    const conteos   = stats.conteoPorEstado;
 
-    // Actualizar UI - Stats fijos
-    document.getElementById('statDeleted').innerText = `${estadisticas.totalEliminadasSistema.toLocaleString()} items`;
-    document.getElementById('statFreed').innerText = `${formatBytesToGB(estadisticas.bytesLiberados)} GB`;
+    // Métricas globales
+    document.getElementById('statDeleted').innerText =
+        `${stats.totalEliminadasSistema.toLocaleString()} items`;
+    document.getElementById('statFreed').innerText =
+        formatBytes(stats.bytesLiberados);
 
-    // Actualizar UI - Conteos dinámicos
-    document.getElementById('countLight').innerText = `${conteos['DETERIORO_LEVE']} Photos`;
-    document.getElementById('countMinor').innerText = `${conteos['DETERIORO_MENOR']} Photos`;
-    document.getElementById('countMajor').innerText = `${conteos['DETERIORO_MAYOR']} Photos`;
+    // Conteos por estado
+    document.getElementById('countLight').innerText    = `${conteos['DETERIORO_LEVE']}    Photos`;
+    document.getElementById('countMinor').innerText    = `${conteos['DETERIORO_MENOR']}   Photos`;
+    document.getElementById('countMajor').innerText    = `${conteos['DETERIORO_MAYOR']}   Photos`;
     document.getElementById('countCritical').innerText = `${conteos['DETERIORO_CRITICO']} Photos`;
 };

@@ -64,7 +64,7 @@ class RegistroEliminacion(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     fotografia_id = Column(
-        Integer, ForeignKey('fotografias.id', ondelete='CASCADE'), nullable=False
+        Integer, ForeignKey('fotografias.id', ondelete='CASCADE'), nullable=True
     )
     usuario_id = Column(
         Integer, ForeignKey('usuarios.id'), nullable=False
@@ -72,6 +72,7 @@ class RegistroEliminacion(Base):
     fecha_ingreso_papelera = Column(DateTime, nullable=False)
     fecha_eliminacion_definitiva = Column(DateTime, nullable=True)
     auto = Column(Boolean, nullable=False, default=False)
+    tamano_bytes = Column(Integer, nullable=True, default=0)
 
     # Relaciones
     fotografia = relationship('Fotografia', back_populates='registros_eliminacion')
