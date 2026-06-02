@@ -60,6 +60,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // UI Events para register.html (Register)
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
+        const accepted = sessionStorage.getItem('ecomemory_policy_accepted');
+        if (!accepted) {
+            window.location.href = 'privacy.html';
+            return;
+        }
+
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const fName = document.getElementById('fName').value;
@@ -97,4 +103,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
-
+
