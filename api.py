@@ -27,7 +27,8 @@ DAEMON_INTERVALO = TIEMPO_MAXIMO_VIDA * 0.05  # 5% del tiempo de vida (= polling
 class EcoMemoryAPI:
     def __init__(self, base_dir: str):
         self.base_dir = base_dir
-        self.images_dir = os.path.join(base_dir, 'assets', 'images')
+        self.images_dir = os.path.join(base_dir, 'frontend', 'assets', 'images')
+        os.makedirs(self.images_dir, exist_ok=True)
 
         # Inicializar SQLAlchemy
         engine = get_engine(base_dir)
@@ -74,6 +75,14 @@ class EcoMemoryAPI:
         name, ext = os.path.splitext(filename)
         ts = int(datetime.now().timestamp() * 1000)
         return f"{name}_{ts}{ext}"
+
+    def _resolver_ruta_fisica(self, ruta: str) -> str:
+        """Resuelve la ruta local física de una imagen independientemente de cómo se almacene."""
+        if os.path.isabs(ruta):
+            return ruta
+        if ruta.startswith('assets/images/') or ruta.startswith('./assets/images/') or ruta.startswith('../assets/images/'):
+            return os.path.join(self.images_dir, os.path.basename(ruta))
+        return os.path.join(self.base_dir, ruta)
 
     # ──────────────────────────────────────────────────────────────────────────
     # Daemon de Erosión Temporal
@@ -158,10 +167,11 @@ class EcoMemoryAPI:
                             if dias_en_papelera >= 30:
                                 nombre = foto.nombre
                                 ruta   = foto.ruta_original
+                                ruta_fisica = self._resolver_ruta_fisica(ruta)
 
                                 try:
-                                    if os.path.exists(ruta):
-                                        os.remove(ruta)
+                                    if os.path.exists(ruta_fisica):
+                                        os.remove(ruta_fisica)
                                 except Exception as e:
                                     self._log(f'✗ Error al eliminar archivo: {e}')
 
@@ -454,15 +464,16 @@ class EcoMemoryAPI:
     
             nombre  = foto.nombre
             ruta    = foto.ruta_original
+            ruta_fisica = self._resolver_ruta_fisica(ruta)
             tamano  = foto.tamano_bytes
-    
+
             # Eliminar archivo físico
             try:
-                if os.path.exists(ruta):
-                    os.remove(ruta)
-                    self._log(f'✓ ARCHIVO ELIMINADO: {ruta}')
+                if os.path.exists(ruta_fisica):
+                    os.remove(ruta_fisica)
+                    self._log(f'✓ ARCHIVO ELIMINADO: {ruta_fisica}')
                 else:
-                    self._log(f'⚠ Archivo no encontrado en disco: {ruta}')
+                    self._log(f'⚠ Archivo no encontrado en disco: {ruta_fisica}')
             except Exception as e:
                 self._log(f'✗ Error al eliminar archivo: {e}')
                 return {'success': False, 'error': 'FILE_DELETE_ERROR'}

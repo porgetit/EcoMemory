@@ -6,9 +6,9 @@ import { getSession, logout } from './auth.js';
 // ──────────────────────────────────────────────────────────────────────────────
 
 const formatTiempoRestante = (diasRestantes) => {
-    if (diasRestantes <= 0)  return 'Deleting soon';
-    if (diasRestantes === 1) return '1d remaining';
-    return `${diasRestantes}d remaining`;
+    if (diasRestantes <= 0)  return 'Eliminación inminente';
+    if (diasRestantes === 1) return '1 día restante';
+    return `${diasRestantes} días restantes`;
 };
 
 const getUrgencyClass = (diasRestantes) => {
@@ -73,10 +73,10 @@ const crearTarjeta = (foto, onRestore, onPurge) => {
                 <!-- Overlay hover con botones -->
                 <div class="trash-card-overlay">
                     <button class="btn-overlay-restore">
-                        <i class="bi bi-arrow-counterclockwise"></i> Restore
+                        <i class="bi bi-arrow-counterclockwise"></i> Restaurar
                     </button>
                     <button class="btn-overlay-purge">
-                        <i class="bi bi-trash3-fill"></i> Delete
+                        <i class="bi bi-trash3-fill"></i> Eliminar
                     </button>
                 </div>
 
@@ -132,7 +132,7 @@ const renderGrid = (fotos, session) => {
             foto,
             // onRestore
             async (f) => {
-                const ok = confirm(`Restore "${f.nombre}" to your gallery?`);
+                const ok = confirm(`¿Restaurar "${f.nombre}" en tu galería?`);
                 if (!ok) return;
                 const res = await apiRestorePhoto(f.id, session.usuarioId);
                 if (res && res.success) {
@@ -147,7 +147,7 @@ const renderGrid = (fotos, session) => {
             // onPurge
             async (f) => {
                 const ok = confirm(
-                    `Permanently delete "${f.nombre}"?\n\nThis action is irreversible and cannot be undone.`
+                    `¿Eliminar permanentemente "${f.nombre}"?\n\nEsta acción es irreversible y no se puede deshacer.`
                 );
                 if (!ok) return;
                 const res = await apiPermanentDelete(f.id, session.usuarioId);
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Nombre de usuario en navbar
     document.querySelectorAll('.user-name-display')
-        .forEach(el => el.textContent = session.nombre || 'User');
+        .forEach(el => el.textContent = session.nombre || 'Usuario');
 
     // Cargar papelera
     const res = await apiGetTrash(session.usuarioId);
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const res = await apiGetTrash(session.usuarioId);
         if (!res?.fotos?.length) return;
 
-        const ok = confirm(`Restore all ${res.fotos.length} photo(s) to your gallery?`);
+        const ok = confirm(`¿Restaurar las ${res.fotos.length} fotos a tu galería?`);
         if (!ok) return;
 
         for (const foto of res.fotos) {
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!res?.fotos?.length) return;
 
         const ok = confirm(
-            `Permanently delete all ${res.fotos.length} photo(s)?\n\nThis action is irreversible and cannot be undone.`
+            `¿Eliminar permanentemente las ${res.fotos.length} fotos?\n\nEsta acción es irreversible y no se puede deshacer.`
         );
         if (!ok) return;
 

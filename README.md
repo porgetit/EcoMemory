@@ -40,17 +40,24 @@ El proyecto explora esta idea como comentario sobre conservación medioambiental
 EcoMemory/
 ├── app.py               # Punto de entrada: crea ventana PyWebView e inyecta la API
 ├── api.py               # EcoMemoryAPI: bridge Python ↔ JavaScript (SQLAlchemy + daemon)
-├── index.html           # Pantalla de login
-├── register.html        # Pantalla de registro
-├── gallery.html         # Galería principal + panel de métricas
-├── css/
-│   └── main.css         # Sistema de diseño unificado (dark mode, CSS custom properties)
-├── js/
-│   ├── auth.js          # Autenticación, guardas de sesión, control de ciclo de vida del daemon
-│   ├── storage.js       # Capa de datos: caché localStorage + bridges a la API Python
-│   ├── gallery.js       # Renderizado de galería con Canvas, eliminación, polling dinámico
-│   ├── erosion.js       # Clasificación de deterioro y utilidades de estado
-│   └── dashboard.js     # Cómputo y renderizado de métricas del panel lateral
+├── frontend/            # UI: HTML, CSS, JS y recursos estáticos
+│   ├── index.html       # Pantalla de login
+│   ├── register.html    # Pantalla de registro
+│   ├── gallery.html     # Galería principal + panel de métricas
+│   ├── photo.html       # Vista individual de fotografía
+│   ├── privacy.html     # Página de privacidad
+│   ├── trash.html       # Papelera de reciclaje
+│   ├── css/
+│   │   └── main.css     # Sistema de diseño unificado (dark mode, CSS custom properties)
+│   ├── js/
+│   │   ├── auth.js      # Autenticación, guardas de sesión, control de ciclo de vida del daemon
+│   │   ├── storage.js   # Capa de datos: caché localStorage + bridges a la API Python
+│   │   ├── gallery.js   # Renderizado de galería con Canvas, eliminación, polling dinámico
+│   │   ├── erosion.js   # Clasificación de deterioro y utilidades de estado
+│   │   └── dashboard.js # Cómputo y renderizado de métricas del panel lateral
+│   └── assets/
+│       ├── logo.svg
+│       └── images/      # Almacenamiento de imágenes subidas por el usuario
 ├── database/
 │   ├── __init__.py
 │   ├── models.py        # Modelos ORM: Usuario, Fotografia, RegistroEliminacion

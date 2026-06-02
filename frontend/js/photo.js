@@ -7,12 +7,12 @@ import { getSession } from './auth.js';
 
 const getLabelEstado = (estadoErosion) => {
     const labels = {
-        'DETERIORO_LEVE':   'Light decay',
-        'DETERIORO_MENOR':  'Minor decay',
-        'DETERIORO_MAYOR':  'Major decay',
-        'DETERIORO_CRITICO':'Critical decay',
+        'DETERIORO_LEVE':   'Deterioro leve',
+        'DETERIORO_MENOR':  'Deterioro menor',
+        'DETERIORO_MAYOR':  'Deterioro mayor',
+        'DETERIORO_CRITICO':'Deterioro crítico',
     };
-    return labels[estadoErosion] || 'Unknown';
+    return labels[estadoErosion] || 'Desconocido';
 };
 
 const getBarColor = (nivel) => {
@@ -63,7 +63,7 @@ const renderPanel = (foto, nivelPrevio) => {
     const pct = Math.round(nivelPrevio * 100);
 
     // Título con porcentaje previo
-    document.getElementById('erosionTitle').textContent = `Erosion: ${pct}%`;
+    document.getElementById('erosionTitle').textContent = `Deterioro: ${pct}%`;
 
     // Barra de progreso con color según nivel
     const bar = document.getElementById('erosionBarFill');
@@ -73,7 +73,7 @@ const renderPanel = (foto, nivelPrevio) => {
     // Estado textual
     const estadoLabel = getLabelEstado(foto.estadoErosion);
     document.getElementById('panelStatus').textContent =
-        nivelPrevio > 0 ? 'Degradation cycle active' : 'Optimal state';
+        nivelPrevio > 0 ? 'Ciclo de degradación activo' : 'Estado óptimo';
 
     // Nombre del archivo en navbar
     document.getElementById('photoFilename').textContent = foto.nombre;
@@ -81,10 +81,10 @@ const renderPanel = (foto, nivelPrevio) => {
     // Mensaje según si había deterioro o no
     if (nivelPrevio > 0) {
         document.getElementById('panelMessage').textContent =
-            `You have interacted with this photo. The erosion will restart after closing this view.`;
+            `Has interactuado con esta foto. La erosión se reiniciará al cerrar esta vista.`;
     } else {
         document.getElementById('panelMessage').textContent =
-            `This photo is in optimal state. Keep interacting with it to prevent erosion.`;
+            `Esta foto está en estado óptimo. Sigue interactuando para prevenir la erosión.`;
     }
 };
 
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ── Botón Move to Trash ──
     document.getElementById('btnTrash').addEventListener('click', async () => {
-        const confirmar = confirm(`Move "${foto.nombre}" to trash?`);
+        const confirmar = confirm(`¿Mover "${foto.nombre}" a la papelera?`);
         if (!confirmar) return;
 
         const result = await apiDeletePhoto(fotoId, session.usuarioId);

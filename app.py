@@ -8,14 +8,14 @@ from api import EcoMemoryAPI
 from pathlib import Path
 
 if __name__ == '__main__':
-    Path("./assets/images").mkdir(exist_ok=True)
+    Path("./frontend/assets/images").mkdir(parents=True, exist_ok=True)
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
     api = EcoMemoryAPI(base_dir)
 
     window = webview.create_window(
         title='EcoMemory',
-        url=os.path.join(base_dir, 'index.html'),
+        url=os.path.join(base_dir, 'frontend', 'index.html'),
         js_api=api,
         width=1280,
         height=800,

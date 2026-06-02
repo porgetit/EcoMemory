@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoMemory - Photo</title>
+    <title>EcoMemory - Foto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -239,9 +239,9 @@
 
     <!-- Estado de carga -->
     <div id="loadingState">
-        <div class="text-center">
+            <div class="text-center">
             <div class="spinner-border text-warning mb-3" style="color: var(--accent-primary) !important;"></div>
-            <div class="text-muted-custom" style="font-size: 0.85rem;">Loading photo...</div>
+            <div class="text-muted-custom" style="font-size: 0.85rem;">Cargando foto...</div>
         </div>
     </div>
 
@@ -254,7 +254,7 @@
     <!-- Navbar -->
     <nav class="photo-navbar">
         <button class="btn-back" id="btnBack">
-            <i class="bi bi-arrow-left"></i> Gallery
+            <i class="bi bi-arrow-left"></i> Galería
         </button>
         <div class="photo-filename" id="photoFilename">—</div>
     </nav>
@@ -265,8 +265,8 @@
 
             <div class="panel-header">
                 <div>
-                    <div class="panel-label">Data Integrity</div>
-                    <div class="panel-title" id="erosionTitle">Erosion: —</div>
+                    <div class="panel-label">Integridad de datos</div>
+                    <div class="panel-title" id="erosionTitle">Deterioro: —</div>
                 </div>
                 <div class="panel-status" id="panelStatus">—</div>
             </div>
@@ -275,18 +275,18 @@
                 <div class="erosion-bar-fill" id="erosionBarFill" style="width: 0%;"></div>
             </div>
 
-            <div class="panel-message" id="panelMessage">
-                Loading photo data...
+                    <div class="panel-message" id="panelMessage">
+                Cargando datos de la foto...
             </div>
 
             <div class="panel-actions">
                 <button class="btn-action protect" id="btnProtect">
                     <i class="bi bi-shield-fill"></i>
-                    Protect
+                    Proteger
                 </button>
                 <button class="btn-action trash" id="btnTrash">
                     <i class="bi bi-trash3"></i>
-                    Move to Trash
+                    Mover a la papelera
                 </button>
             </div>
 

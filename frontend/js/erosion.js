@@ -28,12 +28,12 @@ export const calcularDiasInactividad = (foto) => {
 
 export const getLabelEstado = (estadoErosion) => {
     const labels = {
-        'DETERIORO_LEVE': 'Light',
-        'DETERIORO_MENOR': 'Minor',
-        'DETERIORO_MAYOR': 'Major',
-        'DETERIORO_CRITICO': 'Critical'
+        'DETERIORO_LEVE': 'Leve',
+        'DETERIORO_MENOR': 'Menor',
+        'DETERIORO_MAYOR': 'Mayor',
+        'DETERIORO_CRITICO': 'Crítico'
     };
-    return labels[estadoErosion] || 'Unknown';
+    return labels[estadoErosion] || 'Desconocido';
 };
 
 export const getColorBadge = (estadoErosion) => {

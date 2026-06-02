@@ -29,13 +29,13 @@ export const renderizarDashboard = async () => {
 
     // Métricas globales
     document.getElementById('statDeleted').innerText =
-        `${stats.totalEliminadasSistema.toLocaleString()} items`;
+        `${stats.totalEliminadasSistema.toLocaleString()} elementos`;
     document.getElementById('statFreed').innerText =
         formatBytes(stats.bytesLiberados);
 
     // Conteos por estado
-    document.getElementById('countLight').innerText    = `${conteos['DETERIORO_LEVE']}    Photos`;
-    document.getElementById('countMinor').innerText    = `${conteos['DETERIORO_MENOR']}   Photos`;
-    document.getElementById('countMajor').innerText    = `${conteos['DETERIORO_MAYOR']}   Photos`;
-    document.getElementById('countCritical').innerText = `${conteos['DETERIORO_CRITICO']} Photos`;
+    document.getElementById('countLight').innerText    = `${conteos['DETERIORO_LEVE']} fotos`;
+    document.getElementById('countMinor').innerText    = `${conteos['DETERIORO_MENOR']} fotos`;
+    document.getElementById('countMajor').innerText    = `${conteos['DETERIORO_MAYOR']} fotos`;
+    document.getElementById('countCritical').innerText = `${conteos['DETERIORO_CRITICO']} fotos`;
 };
